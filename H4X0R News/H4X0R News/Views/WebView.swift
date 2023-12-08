@@ -3,7 +3,6 @@
 //  H4X0R News
 //
 //  Created by JuSun Kang on 12/7/23.
-//
 
 import SwiftUI
 import WebKit
