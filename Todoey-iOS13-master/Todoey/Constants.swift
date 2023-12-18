@@ -10,4 +10,6 @@ import Foundation
 
 struct C {
     static let itemCell = "TodoItemCell"
+    static let categoryCell = "CategoryCell"
+    static let itemSegue = "goToItems"
 }
