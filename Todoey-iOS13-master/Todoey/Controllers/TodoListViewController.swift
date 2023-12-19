@@ -10,11 +10,11 @@ import UIKit
 import CoreData
 import RealmSwift
 
-class TodoListViewController: UITableViewController {
+class TodoListViewController: SwipeTableViewController {
     
     @IBOutlet weak var searchBar: UISearchBar!
-    var todoItems: Results<Item>?
     let realm = try! Realm()
+    var todoItems: Results<Item>?
     
     var selectedCategory: Category? {
         didSet {
@@ -48,8 +48,8 @@ class TodoListViewController: UITableViewController {
         
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        let cell = UITableViewCell(style: .default, reuseIdentifier: C.itemCell)
-//        let cell = tableView.dequeueReusableCell(withIdentifier: C.itemCell, for: indexPath)
+//        let cell = UITableViewCell(style: .default, reuseIdentifier: C.itemCell)
+        let cell = super.tableView(tableView, cellForRowAt: indexPath)
         
         if let item = todoItems?[indexPath.row] {
             
@@ -152,24 +152,25 @@ class TodoListViewController: UITableViewController {
         
         todoItems = selectedCategory?.items.sorted(byKeyPath: "title", ascending: true)
         
+        /*
+        let categoryPredicate = NSPredicate(format: "parentCategory.name MATCHES %@", selectedCategory!.name!)
         
-//        let categoryPredicate = NSPredicate(format: "parentCategory.name MATCHES %@", selectedCategory!.name!)
+        if let additionalPredicate = predicate {
+            request.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [categoryPredicate, additionalPredicate])
+        } else {
+            request.predicate = categoryPredicate
+        }
+        
+//        let predicate = NSPredicate(format: "parentCategory.name MATCHES %@", selectedCategory!.name!)
 //        
-//        if let additionalPredicate = predicate {
-//            request.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [categoryPredicate, additionalPredicate])
-//        } else {
-//            request.predicate = categoryPredicate
-//        }
-//        
-////        let predicate = NSPredicate(format: "parentCategory.name MATCHES %@", selectedCategory!.name!)
-////        
-////        request.predicate = predicate
-//        
-//        do {
-//            todoItems = try context.fetch(request)
-//        } catch {
-//            print("🔴 fetching loadItems from context Error \n\(error)")
-//        }
+//        request.predicate = predicate
+        
+        do {
+            todoItems = try context.fetch(request)
+        } catch {
+            print("🔴 fetching loadItems from context Error \n\(error)")
+        }
+         */
         
         tableView.reloadData()
         
@@ -185,6 +186,23 @@ class TodoListViewController: UITableViewController {
 //            }
 //        }
 //    }
+    
+    // MARK: - Delete Data From Swipe
+    
+    override func updateModel(at indexPath: IndexPath) {
+        
+        super.updateModel(at: indexPath)
+        
+        if let itemForDelete = todoItems?[indexPath.row] {
+            do {
+                try self.realm.write {
+                    realm.delete(itemForDelete)
+                }
+            } catch {
+                print("🔴 Realm item delete Error \n\(error)")
+            }
+        }
+    }
     
 }
 

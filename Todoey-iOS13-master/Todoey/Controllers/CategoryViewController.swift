@@ -8,11 +8,12 @@
 
 import UIKit
 import RealmSwift
+import SwipeCellKit
+import ChameleonFramework
 
-class CategoryViewController: UITableViewController {
+class CategoryViewController: SwipeTableViewController {
     
     let realm = try! Realm()
-    
     var categories: Results<Category>?
 //    let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
 
@@ -29,16 +30,27 @@ class CategoryViewController: UITableViewController {
         return categories?.count ?? 1
     }
     
-    // MARK: - TableView Delegate Methods
+    //    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    //        let cell = UITableViewCell(style: .default, reuseIdentifier: C.categoryCell)
+    //
+    //        // Set Cell Data
+    //        cell.textLabel?.text = categories?[indexPath.row].name ?? "No Categories Added yet"
+    //
+    //        return cell
+    //    }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = UITableViewCell(style: .default, reuseIdentifier: C.categoryCell)
-        
+        let cell = super.tableView(tableView, cellForRowAt: indexPath)
+
         // Set Cell Data
         cell.textLabel?.text = categories?[indexPath.row].name ?? "No Categories Added yet"
         
+        cell.backgroundColor = UIColor.randomFlat()
+
         return cell
     }
+    
+    // MARK: - TableView Delegate Methods
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         performSegue(withIdentifier: C.itemSegue, sender: self)
@@ -76,6 +88,23 @@ class CategoryViewController: UITableViewController {
         
     }
     
+    // MARK: - Delete Data From Swipe
+    
+    override func updateModel(at indexPath: IndexPath) {
+        
+        super.updateModel(at: indexPath)
+        
+        if let category = self.categories?[indexPath.row] {
+            do {
+                try self.realm.write {
+                    self.realm.delete(category)
+                }
+            } catch {
+                print("🔴 editActionsForRowAt - delete category Error \n\(error)")
+            }
+        }
+    }
+    
     
     // MARK: - Add New Categories
 
@@ -108,3 +137,5 @@ class CategoryViewController: UITableViewController {
     }
     
 }
+
+
