@@ -30,6 +30,8 @@ class TodoListViewController: SwipeTableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        tableView.separatorStyle = .none
+        
         loadItems()
         
 //        print(FileManager.default.urls(for: .documentDirectory, in: .userDomainMask))
@@ -37,6 +39,18 @@ class TodoListViewController: SwipeTableViewController {
 //        if let items = defaults.array(forKey: "TodoListArray") as? [String] {
 //            todoItems = items
 //        }
+        
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        
+        guard let navBar = navigationController?.navigationBar else { fatalError("Navigation controller does not exist.") }
+        
+        title = self.selectedCategory!.name
+        navBar.barTintColor = Asset.momo.color
+//        navBar.tintColor =
+//        navBar.largeTitleTextAttributes = [NSAttributedStringKey.foregroundColor: ConstrastColorOf()]
+        searchBar.barTintColor = Asset.momo.color
         
     }
 
